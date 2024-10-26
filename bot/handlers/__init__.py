@@ -6,12 +6,16 @@ def setup_routers() -> Router:
         start
     )
     from .admins import (
-        admin_panel
+        admin_panel,
+        mailing,
+        bot_stats
     )
     router = Router()
     router.include_routers(
         start.router,
-        admin_panel.router
+        admin_panel.router,
+        mailing.router,
+        bot_stats.router
     )
 
     return router
