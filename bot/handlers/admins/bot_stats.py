@@ -11,6 +11,6 @@ router = Router()
 async def bot_stats(call: CallbackQuery) -> None:
     users_count = await count_users()
 
-    await call.message.edit_text(f'<b>Статистика бота:</b>\n\n'
-                                 f'<i><b>Всего пользователей:</b> {users_count}</i>',
+    await call.message.edit_text(f'<b>📊 Статистика бота:</b>\n\n'
+                                 f'<i><b>👥 Всего пользователей:</b> {users_count}</i>',
                                  reply_markup=back_to_builder("admin_panel"))

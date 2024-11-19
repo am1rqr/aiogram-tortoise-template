@@ -12,7 +12,7 @@ router = Router()
 
 @router.callback_query(F.data == "mailing")
 async def mailing(call: CallbackQuery, state: FSMContext) -> None:
-    await call.message.edit_text("Отправьте рассылку всем пользователям:",
+    await call.message.edit_text("<i>📝 Пришлите рассылку которую хотите отправить всем пользователям:</i>",
                                  reply_markup=back_to_builder("admin_panel"))
     await state.set_state(Mailing.media)
 
@@ -24,15 +24,15 @@ async def get_mailing_media(message: Message, state: FSMContext) -> None:
         photo = message.photo[-1]
         await state.update_data(photo=photo.file_id)
 
-    await message.answer("Если хотите добавить клавиатуру отправьте в формате <i>Текст кнопки:Ссылка</i>",
-                         reply_markup=button_builder("Пропустить", "approval_mailing"))
+    await message.answer("<i>⌨️ Если хотите добавить клавиатуру отправьте в формате <b>Текст кнопки:Ссылка</b></i>",
+                         reply_markup=button_builder("❌Пропустить", "approval_mailing"))
     await state.set_state(Mailing.keyboard)
 
 
 @router.message(Mailing.keyboard)
 async def get_mailing_keyboard(message: Message, state: FSMContext) -> None:
     if ":" not in message.text or message.text.count(":") > 1:
-        await message.answer("Неверный формат клавиатуры, попробуйте еще раз",
+        await message.answer("<b>🚫 Неверный формат клавиатуры, попробуйте еще раз:</b>",
                              reply_markup=back_to_builder("mailing"))
         return
 
@@ -54,7 +54,7 @@ async def get_mailing_keyboard(message: Message, state: FSMContext) -> None:
         await message.answer(text,
                              reply_markup=markup)
 
-    await message.answer(f"Вы уверены что хотите начать рассылку?",
+    await message.answer(f"<i>❓ Вы уверены что хотите начать рассылку?</i>",
                          reply_markup=approval_builder("approval_mailing", "mailing"))
 
 
@@ -65,7 +65,7 @@ async def approval_mailing(call: CallbackQuery, state: FSMContext) -> None:
     photo: str = data.get("photo")
     markup: InlineKeyboardMarkup = data.get("markup")
 
-    await call.message.edit_text("<i>Рассылка в процессе...</i>")
+    await call.message.edit_text("<i>🔄 Рассылка в процессе...</i>")
 
     users = await get_all_users()
     for user in users:
@@ -82,6 +82,6 @@ async def approval_mailing(call: CallbackQuery, state: FSMContext) -> None:
         except Exception:
             pass
 
-    await call.message.answer("<i>Рассылка завершена успешно</i>",
+    await call.message.answer("<i>✅ Рассылка успешно завершена!</i>",
                               reply_markup=back_to_builder("admin_panel"))
     await state.clear()
