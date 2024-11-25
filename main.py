@@ -10,10 +10,8 @@ from bot.handlers import setup_routers
 from bot.utils.notify_admins import on_startup_notify, on_shutdown_notify
 from config import settings
 
-bot = Bot(
-        settings.BOT_TOKEN.get_secret_value(),
-        default=DefaultBotProperties(parse_mode=ParseMode.HTML)
-    )
+bot = Bot(settings.BOT_TOKEN.get_secret_value(),
+          default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 dp = Dispatcher()
 
 

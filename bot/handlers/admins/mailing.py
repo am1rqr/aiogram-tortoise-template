@@ -2,7 +2,7 @@ from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 
-from bot.keyboards.builders import back_to_builder, approval, approval_builder, button_builder
+from bot.keyboards.builders import back_to_builder, approval_builder, button_builder
 from bot.states.admins import Mailing
 from database.commands.user import get_all_users
 from main import bot
@@ -54,7 +54,7 @@ async def get_mailing_keyboard(message: Message, state: FSMContext) -> None:
         await message.answer(text,
                              reply_markup=markup)
 
-    await message.answer(f"<i>❓ Вы уверены что хотите начать рассылку?</i>",
+    await message.answer("<i>❓ Вы уверены что хотите начать рассылку?</i>",
                          reply_markup=approval_builder("approval_mailing", "mailing"))
 
 

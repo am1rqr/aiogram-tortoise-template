@@ -5,4 +5,4 @@ from aiogram.types import Message
 
 class IsPrivate(BaseFilter):
     async def __call__(self, message: Message) -> bool:
-        return message.chat.type == ChatType.PRIVATE
+        return message.chat.type in [ChatType.GROUP, ChatType.SUPERGROUP]
