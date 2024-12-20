@@ -9,11 +9,9 @@ router = Router()
 
 @router.message(IsPrivate(), CommandStart())
 async def cmd_start(message: Message) -> None:
-    await message.answer('<b>Главное меню</b>',
-                         reply_markup=None)
+    await message.answer("<b>🏠 Добро пожаловать! Вы находитесь в главном меню.</b>")
 
 
 @router.callback_query(F.data == "menu")
 async def call_menu(call: CallbackQuery) -> None:
-    await call.message.answer('<b>Главное меню</b>',
-                              reply_markup=None)
+    await call.message.edit_text("<b>🏠 Добро пожаловать! Вы находитесь в главном меню.</b>")
