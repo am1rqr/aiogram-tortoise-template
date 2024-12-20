@@ -14,6 +14,6 @@ class Settings(BaseSettings):
     )
 
 
-settings = Settings()
+settings = Settings()  # type: ignore
 
-admins_ids = [1, 2, 3]  # Первому админу будут приходить уведомления о включении и выключении бота
+admins_ids = [1, 2, 3]  # Первому админу будут приходить уведомления

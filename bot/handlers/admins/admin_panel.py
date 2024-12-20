@@ -10,11 +10,11 @@ router = Router()
 
 @router.message(IsPrivate(), IsAdmin(), Command("admin"))
 async def cmd_admin_panel(message: Message) -> None:
-    await message.answer("Админ панель",
+    await message.answer("<b>⭐️ Админ панель.</b>",
                          reply_markup=admin_panel_kb)
 
 
 @router.callback_query(F.data == "admin_panel")
 async def call_admin_panel(call: CallbackQuery) -> None:
-    await call.message.edit_text("Админ панель",
+    await call.message.edit_text("<b>⭐️ Админ панель.</b>",
                                  reply_markup=admin_panel_kb)

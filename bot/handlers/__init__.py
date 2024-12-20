@@ -13,6 +13,7 @@ def setup_routers() -> Router:
     router = Router()
     router.include_routers(
         start.router,
+
         admin_panel.router,
         mailing.router,
         bot_stats.router
