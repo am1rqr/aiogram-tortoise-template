@@ -10,7 +10,7 @@ from bot.handlers import setup_routers
 from bot.middlewares import setup_middlewares
 from bot.utils.notify_admins import on_startup_notify, on_shutdown_notify
 from config import settings
-from database.init import init_database, close_database
+from database import init_database, close_database
 
 bot = Bot(
     settings.BOT_TOKEN.get_secret_value(),

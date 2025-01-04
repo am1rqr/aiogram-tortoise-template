@@ -1,5 +1,6 @@
 from aiogram import Router, F
 from aiogram.filters import CommandStart
+from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
 from bot.filters import IsPrivate
@@ -13,5 +14,6 @@ async def cmd_start(message: Message) -> None:
 
 
 @router.callback_query(F.data == "menu")
-async def call_menu(call: CallbackQuery) -> None:
+async def call_menu(call: CallbackQuery, state: FSMContext) -> None:
+    await state.clear()
     await call.message.edit_text("<b>🏠 Добро пожаловать! Вы находитесь в главном меню.</b>")
