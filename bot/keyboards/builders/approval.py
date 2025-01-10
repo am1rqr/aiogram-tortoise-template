@@ -8,4 +8,4 @@ def approval_builder(approval: str, cancel: str) -> InlineKeyboardMarkup:
     keyboard_builder.button(text="❌Отменить", callback_data=cancel)
 
     keyboard_builder.adjust(1)
-    return keyboard_builder.as_markup(row_width=1)
+    return keyboard_builder.as_markup()
