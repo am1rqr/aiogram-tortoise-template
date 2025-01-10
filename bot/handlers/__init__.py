@@ -8,7 +8,8 @@ def setup_routers() -> Router:
     from .admins import (
         admin_panel,
         mailing,
-        bot_stats
+        bot_stats,
+        find_user
     )
     router = Router()
     router.include_routers(
@@ -16,7 +17,8 @@ def setup_routers() -> Router:
 
         admin_panel.router,
         mailing.router,
-        bot_stats.router
+        bot_stats.router,
+        find_user.router
     )
 
     return router

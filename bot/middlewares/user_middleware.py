@@ -29,5 +29,8 @@ class UserMiddleware(BaseMiddleware):
             user.username = current_event.from_user.username
             await user.save()
 
+        if user.status == "banned":
+            return
+
         data['user'] = user
         return await handler(event, data)
