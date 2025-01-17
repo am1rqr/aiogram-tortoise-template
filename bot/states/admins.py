@@ -12,3 +12,7 @@ class FindUser(StatesGroup):
 
 class ChangeUserNote(StatesGroup):
     note = State()
+
+
+class SendUserMessage(StatesGroup):
+    message = State()
