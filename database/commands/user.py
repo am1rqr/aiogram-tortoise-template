@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 
 from database.models import Users
 
@@ -35,3 +35,11 @@ async def change_user_status(user_id: int) -> None:
         await Users.filter(user_id=user_id).update(status="banned")
     else:
         await Users.filter(user_id=user_id).update(status="active")
+
+
+async def update_user_last_activity(user_id: int) -> None:
+    await Users.filter(user_id=user_id).update(last_activity=datetime.now(UTC))
+
+
+async def update_user_username(user_id: int, username: str) -> None:
+    await Users.filter(user_id=user_id).update(username=username)
