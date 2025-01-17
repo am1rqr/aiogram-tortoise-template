@@ -10,6 +10,7 @@ def find_user_builder(user_status: str, user_id: int) -> InlineKeyboardMarkup:
 
     keyboard_builder = InlineKeyboardBuilder()
 
+    keyboard_builder.button(text="📬Отправить сообщение", callback_data=f"send_message#{user_id}")
     keyboard_builder.button(text="📝 Изменить заметку", callback_data=f"change_user_note#{user_id}")
     keyboard_builder.button(text=button_text, callback_data=f"change_user_status#{user_id}")
     keyboard_builder.button(text="‹ Назад", callback_data="find_user")

@@ -1,10 +1,11 @@
-from aiogram import Router, F
+from aiogram import Router, F, Bot
+from aiogram.exceptions import TelegramAPIError
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
 from bot.keyboards.builders import back_to_builder, find_user_builder
 from bot.keyboards.reply import find_user_kb
-from bot.states.admins import FindUser, ChangeUserNote
+from bot.states.admins import FindUser, ChangeUserNote, SendUserMessage
 from database.commands.user import select_user_by_id, select_user_by_username, change_user_status, update_user_note
 from database.models import Users
 
@@ -135,5 +136,34 @@ async def get_new_user_note(message: Message, state: FSMContext) -> None:
     await update_user_note(user_id, message.text)
 
     await message.answer("<b>✅ Заметка успешно изменена.</b>",
+                         reply_markup=back_to_builder(f"call_find_user#{user_id}"))
+    await state.clear()
+
+
+@router.callback_query(F.data.startswith("send_message#"))
+async def call_send_user_message(call: CallbackQuery, state: FSMContext) -> None:
+    user_id = int(call.data.split("#")[1])
+    await state.update_data(user_id=user_id)
+
+    await call.message.edit_text(
+        "<b>✍️ Введите сообщение для пользователя.</b>",
+        reply_markup=back_to_builder(f"call_find_user#{user_id}")
+    )
+    await state.set_state(SendUserMessage.message)
+
+
+@router.message(F.text, SendUserMessage.message)
+async def get_user_message(message: Message, state: FSMContext, bot: Bot) -> None:
+    data = await state.get_data()
+    user_id: int = data.get("user_id")
+
+    try:
+        await bot.send_message(user_id, message.html_text)
+    except TelegramAPIError:
+        await message.answer("<b>❌ Не удалось отправить сообщение.</b>",
+                             reply_markup=back_to_builder(f"call_find_user#{user_id}"))
+        return
+
+    await message.answer("<b>✅ Сообщение успешно отправлено.</b>",
                          reply_markup=back_to_builder(f"call_find_user#{user_id}"))
     await state.clear()
