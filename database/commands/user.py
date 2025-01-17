@@ -43,3 +43,7 @@ async def update_user_last_activity(user_id: int) -> None:
 
 async def update_user_username(user_id: int, username: str) -> None:
     await Users.filter(user_id=user_id).update(username=username)
+
+
+async def update_user_note(user_id: int, note: str) -> None:
+    await Users.filter(user_id=user_id).update(note=note)
