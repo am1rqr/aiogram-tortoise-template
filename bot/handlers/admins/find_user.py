@@ -6,12 +6,13 @@ from bot.keyboards.builders import back_to_builder, find_user_builder
 from bot.keyboards.reply import find_user_kb
 from bot.states.admins import FindUser
 from database.commands.user import select_user_by_id, select_user_by_username, change_user_status
+from database.models import Users
 
 router = Router()
 
 
-async def format_user_info(user):
-    user_info = f"@{user.username} | {user.user_id}" if user.username else f"ID {user.user_id}"
+async def format_user_info(user: Users):
+    user_info = f"@{user.username} | {user.user_id}" if user.username else f"{user.first_name} | ID {user.user_id}"
     user_status = "Активен" if user.status == "active" else "Заблокирован"
     registration_date = user.created_at.strftime('%d.%m.%Y %H:%M:%S')
     return user_info, user_status, registration_date

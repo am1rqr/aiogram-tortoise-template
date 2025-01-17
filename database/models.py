@@ -12,4 +12,5 @@ class TimedModel(Model):
 class Users(TimedModel):
     user_id = fields.BigIntField(primary_key=True)
     username = fields.CharField(max_length=32, null=True)
+    first_name = fields.CharField(max_length=64)
     status = fields.CharField(max_length=6, default="active")  # active, banned
