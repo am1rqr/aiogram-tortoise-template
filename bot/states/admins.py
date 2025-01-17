@@ -8,3 +8,7 @@ class Mailing(StatesGroup):
 
 class FindUser(StatesGroup):
     user = State()
+
+
+class ChangeUserNote(StatesGroup):
+    note = State()
