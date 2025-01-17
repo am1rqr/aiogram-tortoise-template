@@ -22,7 +22,8 @@ class UserMiddleware(BaseMiddleware):
         data["is_first_time"] = False
         if not user:
             user = await Users.create(user_id=current_event.from_user.id,
-                                      username=current_event.from_user.username)
+                                      username=current_event.from_user.username,
+                                      first_name=current_event.from_user.first_name)
             data["is_first_time"] = True
 
         if user.username != current_event.from_user.username:
