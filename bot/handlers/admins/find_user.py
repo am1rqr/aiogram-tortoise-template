@@ -85,6 +85,8 @@ async def call_change_user_status(call: CallbackQuery):
     user = await select_user_by_id(user_id)
 
     user_info, note, user_status, registration_date, last_activity = await format_user_info(user)
+
+    user_status = "Заблокирован" if user.status == "active" else "Активен"
     user_kb_status = "blocked" if user.status == "active" else "active"
 
     await call.message.edit_text(
