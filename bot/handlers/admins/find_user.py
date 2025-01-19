@@ -6,20 +6,33 @@ from aiogram.types import CallbackQuery, Message
 from bot.keyboards.builders import back_to_builder, find_user_builder
 from bot.keyboards.reply import find_user_kb
 from bot.states.admins import FindUser, ChangeUserNote, SendUserMessage
+from config import tz_info
 from database.commands.user import select_user_by_id, select_user_by_username, change_user_status, update_user_note
 from database.models import Users
+from main import tz
 
 router = Router()
 
 
-async def format_user_info(user: Users) -> tuple[str, str, str, str, str]:
+def format_user_info(user: Users) -> tuple[str, str, str, str, str]:
     user_info = f"@{user.username} | {user.user_id}" if user.username else f"{user.first_name} | ID {user.user_id}"
     note = user.note if user.note else "-"
     user_status = "Активен" if user.status == "active" else "Заблокирован"
-    registration_date = user.created_at.strftime('%d.%m.%Y %H:%M:%S')
-    last_activity = user.last_activity.strftime('%d.%m.%Y %H:%M:%S')
+    registration_date = user.created_at.astimezone(tz).strftime('%d.%m.%Y %H:%M:%S')
+    last_activity = user.last_activity.astimezone(tz).strftime('%d.%m.%Y %H:%M:%S')
 
     return user_info, note, user_status, registration_date, last_activity
+
+
+def get_user_info_text(user_info, note, user_status, registration_date, last_activity) -> str:
+    user_info = (
+        f"<b>👤 Пользователь {user_info}</b>\n\n"
+        f"<b>📝 Заметка: <i>{note}</i></b>\n"
+        f"<b>⭐️ Статус: <i>{user_status}</i></b>\n\n"
+        f"<b>🔔 Последняя активность: <i>{last_activity}</i> {tz_info}.</b>\n"
+        f"<b>📅 Зарегистрирован: <i>{registration_date}</i> {tz_info}.</b>"
+    )
+    return user_info
 
 
 @router.callback_query(F.data == "find_user")
@@ -43,13 +56,11 @@ async def get_user_shared(message: Message, state: FSMContext):
         )
         return
 
-    user_info, note, user_status, registration_date, last_activity = await format_user_info(user)
+    user_info = format_user_info(user)
+    user_info_text = get_user_info_text(*user_info)
+
     await message.answer(
-        f"<b>👤 Пользователь {user_info}</b>\n\n"
-        f"<b>📝 Заметка: <i>{note}</i></b>\n"
-        f"<b>⭐️ Статус: <i>{user_status}</i></b>\n\n"
-        f"<b>🔔 Последняя активность: <i>{last_activity}</i> UTC.</b>\n"
-        f"<b>📅 Зарегистрирован: <i>{registration_date}</i> UTC.</b>",
+        user_info_text,
         reply_markup=find_user_builder(user.status, user.user_id)
     )
     await state.clear()
@@ -67,13 +78,11 @@ async def get_user(message: Message, state: FSMContext):
         )
         return
 
-    user_info, note, user_status, registration_date, last_activity = await format_user_info(user)
+    user_info = format_user_info(user)
+    user_info_text = get_user_info_text(*user_info)
+
     await message.answer(
-        f"<b>👤 Пользователь {user_info}</b>\n\n"
-        f"<b>📝 Заметка: <i>{note}</i></b>\n"
-        f"<b>⭐️ Статус: <i>{user_status}</i></b>\n\n"
-        f"<b>🔔 Последняя активность: <i>{last_activity}</i> UTC.</b>\n"
-        f"<b>📅 Зарегистрирован: <i>{registration_date}</i> UTC.</b>",
+        user_info,
         reply_markup=find_user_builder(user.status, user.user_id)
     )
     await state.clear()
@@ -84,17 +93,15 @@ async def call_change_user_status(call: CallbackQuery):
     user_id = int(call.data.split("#")[1])
     user = await select_user_by_id(user_id)
 
-    user_info, note, user_status, registration_date, last_activity = await format_user_info(user)
+    user_info, note, user_status, registration_date, last_activity = format_user_info(user)
 
     user_status = "Заблокирован" if user.status == "active" else "Активен"
     user_kb_status = "blocked" if user.status == "active" else "active"
 
+    user_info_text = get_user_info_text(user_info, note, user_status, registration_date, last_activity)
+
     await call.message.edit_text(
-        f"<b>👤 Пользователь {user_info}</b>\n\n"
-        f"<b>📝 Заметка: <i>{note}</i></b>\n"
-        f"<b>⭐️ Статус: <i>{user_status}</i></b>\n\n"
-        f"<b>🔔 Последняя активность: <i>{last_activity}</i> UTC.</b>\n"
-        f"<b>📅 Зарегистрирован: <i>{registration_date}</i> UTC.</b>",
+        user_info_text,
         reply_markup=find_user_builder(user_kb_status, user.user_id)
     )
     await change_user_status(user_id)
@@ -106,13 +113,10 @@ async def call_find_user(call: CallbackQuery, state: FSMContext) -> None:
     user_id = int(call.data.split("#")[1])
     user = await select_user_by_id(user_id)
 
-    user_info, note, user_status, registration_date, last_activity = await format_user_info(user)
+    user_info = format_user_info(user)
+    user_info_text = get_user_info_text(*user_info)
     await call.message.edit_text(
-        f"<b>👤 Пользователь {user_info}</b>\n\n"
-        f"<b>📝 Заметка: <i>{note}</i></b>\n"
-        f"<b>⭐️ Статус: <i>{user_status}</i></b>\n\n"
-        f"<b>🔔 Последняя активность: <i>{last_activity}</i> UTC.</b>\n"
-        f"<b>📅 Зарегистрирован: <i>{registration_date}</i> UTC.</b>",
+        user_info_text,
         reply_markup=find_user_builder(user.status, user.user_id)
     )
     await state.clear()
@@ -135,10 +139,18 @@ async def get_new_user_note(message: Message, state: FSMContext) -> None:
     data = await state.get_data()
     user_id: int = data.get("user_id")
 
-    await update_user_note(user_id, message.text)
+    user = await select_user_by_id(user_id)
+    user_info, note, user_status, registration_date, last_activity = format_user_info(user)
 
-    await message.answer("<b>✅ Заметка успешно изменена.</b>",
-                         reply_markup=back_to_builder(f"call_find_user#{user_id}"))
+    note = message.text
+    user_info_text = get_user_info_text(user_info, note, user_status, registration_date, last_activity)
+
+    await message.answer(
+        user_info_text,
+        reply_markup=find_user_builder(user.status, user.user_id)
+    )
+
+    await update_user_note(user_id, message.text)
     await state.clear()
 
 
@@ -161,11 +173,17 @@ async def get_user_message(message: Message, state: FSMContext, bot: Bot) -> Non
 
     try:
         await bot.send_message(user_id, message.html_text)
-    except TelegramAPIError:
-        await message.answer("<b>❌ Не удалось отправить сообщение.</b>",
-                             reply_markup=back_to_builder(f"call_find_user#{user_id}"))
-        return
 
-    await message.answer("<b>✅ Сообщение успешно отправлено.</b>",
-                         reply_markup=back_to_builder(f"call_find_user#{user_id}"))
+        await message.answer("<b><i>✅ Сообщение успешно отправлено.</i></b>")
+    except TelegramAPIError:
+        await message.answer("<b><i>❌ Не удалось отправить сообщение.</i></b>")
+
+    user = await select_user_by_id(user_id)
+    user_info = format_user_info(user)
+    user_info_text = get_user_info_text(*user_info)
+
+    await message.answer(
+        user_info_text,
+        reply_markup=find_user_builder(user.status, user.user_id)
+    )
     await state.clear()
