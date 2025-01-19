@@ -1,5 +1,7 @@
 from tortoise import Model, fields
 
+from database.enums import UserStatus
+
 
 class TimedModel(Model):
     updated_at = fields.DatetimeField(auto_now=True)
@@ -14,5 +16,5 @@ class Users(TimedModel):
     username = fields.CharField(max_length=32, null=True)
     first_name = fields.CharField(max_length=64)
     note = fields.TextField(null=True)
-    status = fields.CharField(max_length=6, default="active")  # active, banned
+    status = fields.CharField(max_length=6, default=UserStatus.ACTIVE.value)
     last_activity = fields.DatetimeField(null=True)

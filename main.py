@@ -2,6 +2,7 @@ import asyncio
 import logging
 from contextlib import suppress
 
+import pytz
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
@@ -9,7 +10,7 @@ from aiogram.enums import ParseMode
 from bot.handlers import setup_routers
 from bot.middlewares import setup_middlewares
 from bot.utils.notify_admins import on_startup_notify, on_shutdown_notify
-from config import settings
+from config import settings, timezone
 from database import init_database, close_database
 
 bot = Bot(
@@ -17,6 +18,8 @@ bot = Bot(
     default=DefaultBotProperties(parse_mode=ParseMode.HTML)
 )
 dp = Dispatcher()
+
+tz = pytz.timezone(timezone)
 
 
 async def on_startup(bot: Bot) -> None:
