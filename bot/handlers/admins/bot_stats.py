@@ -21,3 +21,5 @@ async def bot_stats(call: CallbackQuery) -> None:
                                  f"<b>• За месяц: <i>{one_month_count}</i></b>\n"
                                  f"<b>• За все время: <i>{all_time_count}</i></b>",
                                  reply_markup=back_to_builder("admin_panel"))
+
+eroiguiee=0
