@@ -12,14 +12,12 @@ async def bot_stats(call: CallbackQuery) -> None:
     one_day_count = await timely_count_users(1)
     one_week_count = await timely_count_users(7)
     one_month_count = await timely_count_users(30)
-    one_year_count = await timely_count_users(365)
     all_time_count = await all_time_count_users()
 
-    await call.message.edit_text(f"📊 Статистика бота:\n\n"
-                                 f"📈 Количество пользователей:\n"
-                                 f"• За сегодня: {one_day_count}\n"
-                                 f"• За неделю: {one_week_count}\n"
-                                 f"• За месяц: {one_month_count}\n"
-                                 f"• За год: {one_year_count}\n"
-                                 f"• За все время: {all_time_count}",
+    await call.message.edit_text(f"<b>📊 Статистика бота:</b>\n\n"
+                                 f"<b>📈 Количество пользователей:</b>\n"
+                                 f"<b>• За сегодня: <i>{one_day_count}</i></b>\n"
+                                 f"<b>• За неделю: <i>{one_week_count}</i></b>\n"
+                                 f"<b>• За месяц: <i>{one_month_count}</i></b>\n"
+                                 f"<b>• За все время: <i>{all_time_count}</i></b>",
                                  reply_markup=back_to_builder("admin_panel"))
