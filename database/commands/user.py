@@ -3,6 +3,14 @@ from datetime import datetime, timedelta, UTC
 from database.models import Users
 
 
+async def create_user(user_id: int, username: str, first_name: str, language_code: str) -> Users:
+    user = await Users.create(user_id=user_id,
+                              username=username,
+                              first_name=first_name,
+                              language_code=language_code)
+    return user
+
+
 async def select_user_by_id(user_id: int) -> Users:
     user = await Users.filter(user_id=user_id).first()
     return user
