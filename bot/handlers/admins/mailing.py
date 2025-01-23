@@ -1,6 +1,5 @@
-from contextlib import suppress
-
 from aiogram import Router, F
+from aiogram.exceptions import TelegramAPIError
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 
@@ -14,7 +13,7 @@ router = Router()
 
 @router.callback_query(F.data == "mailing")
 async def mailing(call: CallbackQuery, state: FSMContext) -> None:
-    await call.message.edit_text("<i>📝 Пришлите рассылку которую хотите отправить всем пользователям:</i>",
+    await call.message.edit_text("<b>📝 Пришлите рассылку которую хотите отправить всем пользователям:</b>",
                                  reply_markup=back_to_builder("admin_panel"))
     await state.set_state(Mailing.media)
 
@@ -26,7 +25,7 @@ async def get_mailing_media(message: Message, state: FSMContext) -> None:
         photo = message.photo[-1]
         await state.update_data(photo=photo.file_id)
 
-    await message.answer("<i>⌨️ Если хотите добавить клавиатуру отправьте в формате <b>Текст кнопки::Ссылка</b></i>",
+    await message.answer("<b>⌨️ Если хотите добавить клавиатуру отправьте в формате <i>Текст кнопки::Ссылка</i></b>",
                          reply_markup=button_builder("❌Пропустить", "approval_mailing"))
     await state.set_state(Mailing.keyboard)
 
@@ -56,7 +55,7 @@ async def get_mailing_keyboard(message: Message, state: FSMContext) -> None:
         await message.answer(text,
                              reply_markup=markup)
 
-    await message.answer("<i>❓ Вы уверены что хотите начать рассылку?</i>",
+    await message.answer("<b>❓ Вы уверены что хотите начать рассылку?</b>",
                          reply_markup=approval_builder("approval_mailing", "mailing"))
 
 
@@ -65,13 +64,15 @@ async def approval_mailing(call: CallbackQuery, state: FSMContext) -> None:
     data = await state.get_data()
     text: str = data.get("text")
     photo: str = data.get("photo")
-    markup: InlineKeyboardMarkup = data.get("markup")
+    markup: InlineKeyboardMarkup | None = data.get("markup")
 
     await call.message.edit_text("<i>🔄 Рассылка в процессе...</i>")
 
+    not_delivered_count = 0
+
     users = await get_all_users()
     for user in users:
-        with suppress(Exception):
+        try:
             if photo:
                 await bot.send_photo(chat_id=user.user_id,
                                      photo=photo,
@@ -81,7 +82,13 @@ async def approval_mailing(call: CallbackQuery, state: FSMContext) -> None:
                 await bot.send_message(chat_id=user.user_id,
                                        text=text,
                                        reply_markup=markup)
+        except TelegramAPIError:
+            not_delivered_count += 1
 
-    await call.message.answer("<i>✅ Рассылка успешно завершена!</i>",
+    delivered_count = len(users) - not_delivered_count
+
+    await call.message.answer(f"<b>✅ Рассылка успешно завершена!</b>\n\n"
+                              f"<b>📨 Отправлено: <i>{delivered_count}</i></b>\n"
+                              f"<b>❗️Не доставлено: <i>{not_delivered_count}</i></b>",
                               reply_markup=back_to_builder("admin_panel"))
     await state.clear()
