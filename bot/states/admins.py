@@ -16,3 +16,7 @@ class ChangeUserNote(StatesGroup):
 
 class SendUserMessage(StatesGroup):
     message = State()
+
+
+class AddAdLink(StatesGroup):
+    title = State()
