@@ -1,6 +1,6 @@
 from tortoise import Model, fields
 
-from database.enums import UserStatus
+from database.enums import UserStatus, AdLinkStatus
 
 
 class TimedModel(Model):
@@ -19,3 +19,12 @@ class Users(TimedModel):
     language_code = fields.CharField(max_length=8)
     last_activity = fields.DatetimeField(null=True)
     status = fields.CharField(max_length=6, default=UserStatus.ACTIVE.value)
+
+
+class AdLinks(TimedModel):
+    id = fields.IntField(pk=True)
+    title = fields.CharField(max_length=32)
+    code = fields.CharField(max_length=6)
+    total_visits = fields.IntField(default=0)
+    unique_visits = fields.IntField(default=0)
+    status = fields.CharField(max_length=7, default=AdLinkStatus.ACTIVE.value)
