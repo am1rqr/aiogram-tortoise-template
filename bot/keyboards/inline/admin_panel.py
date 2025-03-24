@@ -6,7 +6,7 @@ admin_panel_kb = InlineKeyboardMarkup(inline_keyboard=[
         InlineKeyboardButton(text="📊Статистика", callback_data="bot_stats")
     ],
     [
-        InlineKeyboardButton(text="📎Реклманые ссылки", callback_data="ad_links")
+        InlineKeyboardButton(text="📎Рекламные ссылки", callback_data="ad_links")
     ],
     [
         InlineKeyboardButton(text="🔍Найти пользователя", callback_data="find_user")
