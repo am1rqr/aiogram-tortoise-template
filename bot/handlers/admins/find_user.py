@@ -4,10 +4,10 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
 from bot.keyboards.builders import back_to_builder, find_user_builder
-from bot.keyboards.reply import find_user_kb
 from bot.states.admins import FindUser, ChangeUserNote, SendUserMessage
 from config import tz_info
 from database.commands.user import select_user_by_id, select_user_by_username, change_user_status, update_user_note
+from database.enums import UserStatus
 from database.models import Users
 from main import tz
 
@@ -39,19 +39,21 @@ def get_user_info_text(user_info, note, user_status, registration_date, last_act
 async def call_find_user(call: CallbackQuery, state: FSMContext):
     await call.message.delete_reply_markup()
 
-    await call.message.answer(
-        "<b>✍️ Введите ID, username или нажмите на кнопку чтобы найти пользователя.</b>",
-        reply_markup=find_user_kb
+    await call.message.edit_text(
+        "<b>✍️ Введите ID или username пользователя:</b>",
+        reply_markup=back_to_builder("admin_panel")
     )
     await state.set_state(FindUser.user)
 
 
-@router.message(F.user_shared, FindUser.user)
-async def get_user_shared(message: Message, state: FSMContext):
-    user = await select_user_by_id(message.user_shared.user_id)
+@router.message(FindUser.user)
+async def get_user(message: Message, state: FSMContext):
+    text = message.text.strip("@")
+    user = await (select_user_by_id(int(text)) if text.isdigit() else select_user_by_username(text))
+
     if not user:
         await message.answer(
-            "<i>❌ Пользователь не найден.</i>",
+            "<i>❌ Некорректный ID или username. Попробуйте еще раз:</i>",
             reply_markup=back_to_builder("admin_panel")
         )
         return
@@ -66,39 +68,16 @@ async def get_user_shared(message: Message, state: FSMContext):
     await state.clear()
 
 
-@router.message(FindUser.user)
-async def get_user(message: Message, state: FSMContext):
-    text = message.text.strip("@")
-    user = await (select_user_by_id(int(text)) if text.isdigit() else select_user_by_username(text))
-
-    if not user:
-        await message.answer(
-            "<i>❌ Некорректный ID или username. Попробуйте еще раз.</i>",
-            reply_markup=back_to_builder("admin_panel")
-        )
-        return
-
-    user_info = format_user_info(user)
-    user_info_text = get_user_info_text(*user_info)
-
-    await message.answer(
-        user_info,
-        reply_markup=find_user_builder(user.status, user.user_id)
-    )
-    await state.clear()
-
-
 @router.callback_query(F.data.startswith("change_user_status#"))
 async def call_change_user_status(call: CallbackQuery):
     user_id = int(call.data.split("#")[1])
     user = await select_user_by_id(user_id)
 
-    user_info, note, user_status, registration_date, last_activity = format_user_info(user)
+    user_status = "Заблокирован" if user.status == UserStatus.ACTIVE else "Активен"
+    user_kb_status = "blocked" if user.status == UserStatus.ACTIVE else "active"
 
-    user_status = "Заблокирован" if user.status == "active" else "Активен"
-    user_kb_status = "blocked" if user.status == "active" else "active"
-
-    user_info_text = get_user_info_text(user_info, note, user_status, registration_date, last_activity)
+    user_info = format_user_info(user)
+    user_info_text = get_user_info_text(*user_info)
 
     await call.message.edit_text(
         user_info_text,
