@@ -5,7 +5,7 @@ from aiogram.types import CallbackQuery, Message
 
 from bot.keyboards.builders import back_to_builder, find_user_builder
 from bot.states.admins import FindUser, ChangeUserNote, SendUserMessage
-from config import tz_info
+from config import TZ_INFO
 from database.commands.user import select_user_by_id, select_user_by_username, change_user_status, update_user_note
 from database.enums import UserStatus
 from database.models import Users
@@ -29,8 +29,8 @@ def get_user_info_text(user_info, note, user_status, registration_date, last_act
         f"<b>👤 Пользователь {user_info}</b>\n\n"
         f"<b>📝 Заметка: <i>{note}</i></b>\n"
         f"<b>⭐️ Статус: <i>{user_status}</i></b>\n\n"
-        f"<b>🔔 Последняя активность: <i>{last_activity}</i> {tz_info}.</b>\n"
-        f"<b>📅 Зарегистрирован: <i>{registration_date}</i> {tz_info}.</b>"
+        f"<b>🔔 Последняя активность: <i>{last_activity}</i> {TZ_INFO}.</b>\n"
+        f"<b>📅 Зарегистрирован: <i>{registration_date}</i> {TZ_INFO}.</b>"
     )
     return user_info
 
