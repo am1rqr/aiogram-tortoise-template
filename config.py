@@ -16,7 +16,7 @@ class Settings(BaseSettings):
 
 settings = Settings()  # type: ignore
 
-admins_ids = [1, 2, 3]  # Первому админу будут приходить уведомления
+ADMINS_IDS = [1, 2, 3]  # Первому админу будут приходить уведомления
 
-timezone = "Asia/Almaty"  # Часовой пояс
-tz_info = "AST"  # Для вывода в сообщениях
+TIMEZONE = "Asia/Almaty"  # Часовой пояс
+TZ_INFO = "AST"  # Для вывода в сообщениях

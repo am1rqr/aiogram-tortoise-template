@@ -10,7 +10,7 @@ from aiogram.enums import ParseMode
 from bot.handlers import setup_routers
 from bot.middlewares import setup_middlewares
 from bot.utils.notify_admins import on_startup_notify, on_shutdown_notify
-from config import settings, timezone
+from config import settings, TIMEZONE
 from database import init_database, close_database
 
 bot = Bot(
@@ -19,7 +19,7 @@ bot = Bot(
 )
 dp = Dispatcher()
 
-tz = pytz.timezone(timezone)
+tz = pytz.timezone(TIMEZONE)
 
 
 async def on_startup(bot: Bot) -> None:
