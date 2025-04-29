@@ -1,5 +1,6 @@
 import os
 
+import pytz
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -20,3 +21,4 @@ ADMINS_IDS = [1, 2, 3]  # Первому админу будут приходи�
 
 TIMEZONE = "Asia/Almaty"  # Часовой пояс
 TZ_INFO = "AST"  # Для вывода в сообщениях
+tz = pytz.timezone(TIMEZONE)
