@@ -31,7 +31,7 @@ class UserMiddleware(BaseMiddleware):
             await update_user_username(user.user_id, current_event.from_user.username)
 
         if user.status == "banned":
-            return
+            return None
 
         data['user'] = user
         return await handler(event, data)
