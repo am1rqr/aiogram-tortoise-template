@@ -9,7 +9,7 @@ from config import TZ_INFO
 from database.commands.user import select_user_by_id, select_user_by_username, change_user_status, update_user_note
 from database.enums import UserStatus
 from database.models import Users
-from main import tz
+from config import tz
 
 router = Router()
 
@@ -18,8 +18,8 @@ def format_user_info(user: Users) -> tuple[str, str, str, str, str]:
     user_info = f"@{user.username} | {user.user_id}" if user.username else f"{user.first_name} | ID {user.user_id}"
     note = user.note if user.note else "-"
     user_status = "Активен" if user.status == "active" else "Заблокирован"
-    registration_date = user.created_at.astimezone(tz).strftime('%d.%m.%Y %H:%M:%S')
-    last_activity = user.last_activity.astimezone(tz).strftime('%d.%m.%Y %H:%M:%S')
+    registration_date = user.created_at.astimezone(tz).strftime("%d.%m.%Y %H:%M:%S")
+    last_activity = user.last_activity.astimezone(tz).strftime("%d.%m.%Y %H:%M:%S")
 
     return user_info, note, user_status, registration_date, last_activity
 

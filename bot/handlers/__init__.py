@@ -9,9 +9,10 @@ def setup_routers() -> Router:
         admin_panel,
         mailing,
         bot_stats,
-        find_user,
-        ad_links
+        find_user
     )
+    from .admins.ad_links import routers as ad_links_routers
+
     router = Router()
     router.include_routers(
         start.router,
@@ -20,7 +21,7 @@ def setup_routers() -> Router:
         mailing.router,
         bot_stats.router,
         find_user.router,
-        ad_links.router
+        *ad_links_routers
     )
 
     return router
