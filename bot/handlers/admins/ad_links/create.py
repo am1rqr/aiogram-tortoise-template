@@ -6,18 +6,11 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from aiogram.utils.deep_linking import create_start_link
 
-from bot.keyboards.builders import ad_links_builder, back_to_builder
+from bot.keyboards.builders import back_to_builder
 from bot.states.admins import AddAdLink
-from database.commands.ad_links import get_all_links, add_ad_link
+from database.commands.ad_links import add_ad_link
 
 router = Router()
-
-
-@router.callback_query(F.data == "ad_links")
-async def call_ad_links(call: CallbackQuery) -> None:
-    all_ad_links = await get_all_links()
-    await call.message.edit_text("<b>📎 Рекламные ссылки:</b>",
-                                 reply_markup=ad_links_builder(all_ad_links))
 
 
 @router.callback_query(F.data == "add_ad_link")

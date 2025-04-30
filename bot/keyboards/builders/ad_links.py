@@ -7,7 +7,7 @@ from database.models import AdLinks
 def ad_links_builder(all_ad_links: list[AdLinks]) -> InlineKeyboardMarkup:
     keyboard_builder = InlineKeyboardBuilder()
 
-    add_ad_link_button = InlineKeyboardButton(text="➕Добавить ссылку", callback_data="add_ad_link")
+    add_ad_link_button = InlineKeyboardButton(text="➕ Добавить ссылку", callback_data="add_ad_link")
     keyboard_builder.row(add_ad_link_button)
 
     buttons = [
