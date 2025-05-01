@@ -1,3 +1,5 @@
+from tortoise.expressions import F
+
 from database.enums import AdLinkStatus
 from database.models import AdLinks
 
@@ -20,3 +22,11 @@ async def get_ad_link_by_id(ad_link_id: int) -> AdLinks:
 
 async def delete_ad_link(ad_link_id: int) -> None:
     await AdLinks.filter(id=ad_link_id).update(status=AdLinkStatus.DELETED)
+
+
+async def add_total_visits(ad_link_id: int) -> None:
+    await AdLinks.filter(id=ad_link_id).update(total_visits=F("total_visits") + 1)
+
+
+async def add_unique_visits(ad_link_id: int) -> None:
+    await AdLinks.filter(id=ad_link_id).update(unique_visits=F("unique_visits") + 1)

@@ -33,5 +33,5 @@ class UserMiddleware(BaseMiddleware):
         if user.status == "banned":
             return None
 
-        data['user'] = user
+        data["user"] = user
         return await handler(event, data)
